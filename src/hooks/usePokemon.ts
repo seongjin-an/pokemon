@@ -1,5 +1,5 @@
 import axios, {AxiosResponse} from "axios";
-import {useQuery, UseQueryResult} from "react-query";
+import {useQueries, useQuery, UseQueryResult} from "react-query";
 
 import { PokemonResponse } from '../types'
 
@@ -8,6 +8,14 @@ const pokemonApi = (id?: string) =>
 
 const usePokemon = <T>(id?: string): UseQueryResult<AxiosResponse<T>, Error> => {
     return useQuery(id ? ['pokemon', id] : 'pokemon', () => pokemonApi(id));
+}
+
+export const usePokemonQueries = (names: string[]): UseQueryResult<AxiosResponse<PokemonResponse>, Error>[] => {
+    const queries = names.map((name, idx) => ({
+        queryKey: ['evolution', `${name}_${idx}`],
+        queryFn: () => pokemonApi(name)
+    }))
+    return useQueries(queries) as UseQueryResult<AxiosResponse<PokemonResponse>, Error>[]
 }
 
 export default usePokemon;
